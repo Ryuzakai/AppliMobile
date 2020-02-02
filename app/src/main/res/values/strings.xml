@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">2i_planning</string>
+    <string name="str_login">Login</string>
+    <string name="str_mdp">Mot de passe</string>
+    <string name="str_connexion">Connexion</string>
+    <string name="str_inscrire">Inscription</string>
+
+    <string name="title_activity_calendar">ActivityCalendar</string>
+
+</resources>
