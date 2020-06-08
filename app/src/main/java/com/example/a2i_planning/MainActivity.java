@@ -1,123 +1,152 @@
 package com.example.a2i_planning;
 
-import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.Menu;
-
-
-import android.content.Intent;
-
-import android.util.Log;
-
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
+import com.example.a2i_planning.View.FragmentConnexion;
+import com.example.a2i_planning.View.FragmentCreerEspace;
+import com.google.android.material.navigation.NavigationView;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
 
-    private static final String CAT = "IME";
-    private EditText edtLogin;
-    private EditText edtMdp;
-    private Button btnConnexion;
-    private Button btnInscrire;
-
+    Bundle my_bdl_send = new Bundle();
+    Bundle myBdl_receive = new Bundle();
+    private ActionBarDrawerToggle drawerToggle;
+    private DrawerLayout mDrawer;
+    private Toolbar toolbar;
+    private NavigationView nvDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fragment nextfragment = null;
         setContentView(R.layout.activity_main);
-        alerter("onCreate");
 
-        Log.i(CAT, "onCreate"); //traces dans le logcat
+        // Set a Toolbar to replace the ActionBar.
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        edtLogin = findViewById(R.id.edt_login);
-        edtLogin.setOnClickListener(this);
-        btnConnexion = findViewById(R.id.btn_connexion);
-        btnConnexion.setOnClickListener(this);
-        btnInscrire = findViewById(R.id.btn_inscrire);
-        btnInscrire.setOnClickListener(this);
+        // This will display an Up icon (<-)
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // Find our drawer view
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerToggle = setupDrawerToggle();
+        drawerToggle.setDrawerIndicatorEnabled(true);
+        drawerToggle.syncState();
+        mDrawer.addDrawerListener(drawerToggle);
+        nvDrawer = (NavigationView) findViewById(R.id.nvView);
+        // Setup drawer view
+        setupDrawerContent(nvDrawer);
+
+        Class fragmentClass = FragmentConnexion.class;
+
+        try {
+            nextfragment = (Fragment) fragmentClass.newInstance();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.flContent, nextfragment).commit();
+
+
     }
 
-    public void alerter(String s) {
-
-        Log.i(CAT,s);
-        Toast t = Toast.makeText(this,s,Toast.LENGTH_LONG);
-        t.show();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
+    private ActionBarDrawerToggle setupDrawerToggle() {
+        return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open, R.string.drawer_close);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch(id) {
-            case R.id.action_account : break;
-            case R.id.action_settings :
-                // affiche de l'activité préférences
-                Intent versPrefs = new Intent(this, PreferencesActivity.class);
-                startActivity(versPrefs);
-                break;
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
         }
         return super.onOptionsItemSelected(item);
+
     }
 
-    @Override
-    public void onClick(View v) {
-        //Methode appelée lors du clic sur edtPseudo ou sur le bouton
-        //l'argument v dénote une reference vers la vue à l'origine de l'évènement
-        //ie la vue cliquée
-        switch(v.getId()){
-            case R.id.btn_connexion:
-                alerter("bouton Connexion");
-                //Récupérer le login saisi
-                String login = edtLogin.getText().toString();
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        selectDrawerItem(menuItem);
+                        return true;
+                    }
+                });
+    }
 
-                if(login.isEmpty()){
-                    alerter("Saisir un pseudo");
-                    return;
-                }
-
-
-                alerter("pseudo :" +login);
-
-                // si non vide changer d'activité
-                //pour afficher la seconde activité
-                //en passant la valeur du nom saisi
-                Bundle myBdl = new Bundle();
-                myBdl.putString("pseudo", login);
-                Intent versCalendar = new Intent(this, CalendarActivity.class);
-                versCalendar.putExtras(myBdl);
-                startActivity(versCalendar);
+    public void selectDrawerItem(MenuItem menuItem) {
+        // Create a new fragment and specify the fragment to show based on nav item clicked
+        Class fragmentClass = null;
+        Fragment nextfragment1;
+        switch (menuItem.getItemId()) {
+            case R.id.nav_acceuil:
+                fragmentClass = FragmentConnexion.class;
                 break;
+            case R.id.nav_add_espace:
 
-            case R.id.edt_login:
-                alerter("Saisir un login");
+                fragmentClass = FragmentCreerEspace.class;
+
+            default:
                 break;
-            case R.id.edt_mdp:
-                alerter("Saisir un mot de passe");
-            case R.id.btn_inscrire:
-                alerter("Bonton Inscription");
-
-                Intent versInscription = new Intent(this, InscriptionActivity.class);
-                startActivity(versInscription);
-                break;
-
-
-            default:break;
 
         }
+//        User currentUser = new User();
+//        if(myBdl_receive!=null){
+//            currentUser = myBdl_receive.getParcelable("user");
+//            my_bdl_send.putParcelable("user",currentUser);
+//            nextfragment1 = Utiles.gotoFragmentwithBdl(fragmentClass, my_bdl_send);
+//        }else{
+//            nextfragment1 = Utiles.gotoFragment(fragmentClass);
+//        }
+
+        nextfragment1 = Utiles.gotoFragment(fragmentClass);
+
+
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.flContent, nextfragment1).addToBackStack(null).commit();
+
+        // Highlight the selected item has been done by NavigationView
+        menuItem.setChecked(true);
+        // Set action bar title
+        setTitle(menuItem.getTitle());
+        // Close the navigation drawer
+        mDrawer.closeDrawers();
+
+
+    }
+
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        drawerToggle.syncState();
     }
 
     @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggles
+        drawerToggle.onConfigurationChanged(newConfig);
     }
+
+
 }

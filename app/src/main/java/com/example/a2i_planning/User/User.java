@@ -1,13 +1,12 @@
-package com.example.a2i_planning;
+package com.example.a2i_planning.User;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class User implements Parcelable {
-    UUID idUser;
+    String idUser;
     String nom;
     String prenom;
     String mail;
@@ -15,7 +14,11 @@ public class User implements Parcelable {
     String mdp;
     ArrayList<Espace> mesEspaces;
 
-    public User(UUID id, String nom, String prenom, String mail, String ddn, String mdp) {
+    public User() {
+
+    }
+
+    public User(String id, String nom, String prenom, String mail, String ddn, String mdp) {
         this.idUser = id;
         this.nom = nom;
         this.prenom = prenom;
@@ -44,7 +47,7 @@ public class User implements Parcelable {
         }
     };
 
-    public UUID getId() {
+    public String getId() {
         return idUser;
     }
 
@@ -68,7 +71,7 @@ public class User implements Parcelable {
         return mdp;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.idUser = id;
     }
 
@@ -105,4 +108,28 @@ public class User implements Parcelable {
         dest.writeString(ddn);
         dest.writeString(mdp);
     }
+
+
+    public ArrayList<Espace> getMesEspaces() {
+        return mesEspaces;
+    }
+
+    public void setMesEspaces(ArrayList<Espace> mesEspaces) {
+        this.mesEspaces = mesEspaces;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "idUser='" + idUser + '\'' +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", mail='" + mail + '\'' +
+                ", ddn='" + ddn + '\'' +
+                ", mdp='" + mdp + '\'' +
+                ", mesEspaces=" + mesEspaces +
+                '}';
+    }
+
+
 }

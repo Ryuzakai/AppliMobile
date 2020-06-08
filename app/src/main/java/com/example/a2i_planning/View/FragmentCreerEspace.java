@@ -1,14 +1,8 @@
-package com.example.a2i_planning;
+package com.example.a2i_planning.View;
 
-import android.content.ClipData;
-import android.content.Context;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
-import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -20,15 +14,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.example.a2i_planning.R;
+import com.example.a2i_planning.User.Espace;
+import com.example.a2i_planning.User.Rubrique;
+import com.example.a2i_planning.User.User;
+import com.example.a2i_planning.Utiles;
 import com.google.android.material.navigation.NavigationView;
 
-import org.xmlpull.v1.XmlSerializer;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 
 public class FragmentCreerEspace extends Fragment implements View.OnClickListener {
 
@@ -42,6 +35,11 @@ public class FragmentCreerEspace extends Fragment implements View.OnClickListene
     Bundle myBdl_send = new Bundle();
     Bundle myBdl_receive = new Bundle();
     FragmentManager fragmentManager;
+    ArrayList<Espace> mesespaces = new ArrayList<>();
+    ArrayList<Rubrique> mesrub = new ArrayList<>();
+    Espace currentEspace = new Espace();
+    User currentUser = new User();
+
 
     @Nullable
     @Override
@@ -70,10 +68,15 @@ public class FragmentCreerEspace extends Fragment implements View.OnClickListene
         titleRub4 =getActivity().findViewById(R.id.tv_rub4_title);
         myBdl_receive = this.getArguments();
         if(myBdl_receive!=null){
-            System.out.println(myBdl_receive);
+            currentUser = myBdl_receive.getParcelable("user");
+
+            edtNomEspace.setText(myBdl_receive.getString("nomEspace"));
+
             if(myBdl_receive.getBoolean("rub_text")){
                 rub1.setVisibility(View.VISIBLE);
                 titleRub1.setText(myBdl_receive.getString("titleText"));
+                mesrub.add(new Rubrique("1", "text", myBdl_receive.getString("titleText")));
+
                 titleRub1.setVisibility(View.VISIBLE);
             }else{
                 rub1.setVisibility(View.INVISIBLE);
@@ -82,6 +85,7 @@ public class FragmentCreerEspace extends Fragment implements View.OnClickListene
             if(myBdl_receive.getBoolean("rub_num")){
                 rub2.setVisibility(View.VISIBLE);
                 titlerub2.setText(myBdl_receive.getString("titleNum"));
+                mesrub.add(new Rubrique("2", "num", myBdl_receive.getString("titleNum")));
                 titlerub2.setVisibility(View.VISIBLE);
             }else{
                 rub2.setVisibility(View.INVISIBLE);
@@ -90,6 +94,7 @@ public class FragmentCreerEspace extends Fragment implements View.OnClickListene
             if(myBdl_receive.getBoolean("rub_time")){
                 rub3.setVisibility(View.VISIBLE);
                 titleRub3.setText(myBdl_receive.getString("titleTime"));
+                mesrub.add(new Rubrique("3", "time", myBdl_receive.getString("titleTime")));
                 titleRub3.setVisibility(View.VISIBLE);
             }else{
                 rub3.setVisibility(View.INVISIBLE);
@@ -98,6 +103,7 @@ public class FragmentCreerEspace extends Fragment implements View.OnClickListene
             if(myBdl_receive.getBoolean("rub_spinner")){
                 rub4.setVisibility(View.VISIBLE);
                 titleRub4.setText(myBdl_receive.getString("titleSpinner"));
+                mesrub.add(new Rubrique("4", "spinner", myBdl_receive.getString("titleSpinner")));
                 titleRub4.setVisibility(View.VISIBLE);
             }else{
                 rub4.setVisibility(View.INVISIBLE);
@@ -114,40 +120,24 @@ public class FragmentCreerEspace extends Fragment implements View.OnClickListene
             case R.id.btn_creer_espace:
                 num=num+1;
                 nomEspace = edtNomEspace.getText().toString();
+
                 if (nomEspace!=null){
-
                     String nomid="espace"+num;
+                    currentEspace.setIdEsp(nomid);
+                    currentEspace.setNomEsp(nomEspace);
 
+                    currentEspace.setMesRubriques(mesrub);
+                    mesespaces.add(currentEspace);
 
-                    FileOutputStream fileos=null;
-                    try {
-                        fileos = getContext().openFileOutput("monfichier",Context.MODE_APPEND);
+                    currentUser.setMesEspaces(mesespaces);
 
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    XmlSerializer serializer = Xml.newSerializer() ;
+                    Utiles util = new Utiles();
 
-                        try {
-                            serializer.setOutput(fileos, "UTF_8");
-                            serializer.startDocument(null, Boolean.valueOf(true));
-                            //serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indentoutput", true);
-                            serializer.startTag(null, "monxml");
+                    util.writeEspaceXml(currentUser, currentEspace, this);
 
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                    myBdl_send.putParcelable("user", currentUser);
+                    myBdl_send.putParcelable("espace", currentEspace);
 
-                    try {
-                        serializer.startTag(null,"etape");
-                        serializer.attribute(null,"id",nomid);
-                        serializer.endTag(null,"etape");
-                        serializer.endDocument();;
-                        serializer.flush();
-                        fileos.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
 
                     NavigationView nvView = getActivity().findViewById(R.id.nvView);
 
@@ -159,9 +149,9 @@ public class FragmentCreerEspace extends Fragment implements View.OnClickListene
                     //nvView.invalidate();
 
 
-                    Fragment nextfragment = Utiles.gotoFragment(FragmentCalendrier.class);
+                    Fragment nextfragment = Utiles.gotoFragmentwithBdl(FragmentEspace.class, myBdl_send);
                     fragmentManager = getFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, nextfragment).addToBackStack(null).commit();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, nextfragment).commit();
 
                 }break;
             case R.id.btn_ajout_rubrique:
@@ -171,6 +161,7 @@ public class FragmentCreerEspace extends Fragment implements View.OnClickListene
                     break;
                 }
                 myBdl_send.putString("nomEspace", nomEspace);
+                myBdl_send.putParcelable("user", currentUser);
                 Fragment nextfragment2 = Utiles.gotoFragmentwithBdl(FragmentNewRubrique.class,myBdl_send);
                 fragmentManager = getFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.flContent,nextfragment2).addToBackStack(null).commit();

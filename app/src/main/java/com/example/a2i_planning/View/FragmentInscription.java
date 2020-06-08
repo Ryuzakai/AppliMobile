@@ -1,9 +1,6 @@
-package com.example.a2i_planning;
+package com.example.a2i_planning.View;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +12,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import org.xmlpull.v1.XmlSerializer;
+import com.example.a2i_planning.R;
+import com.example.a2i_planning.User.User;
+import com.example.a2i_planning.Utiles;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.UUID;
 
 public class FragmentInscription extends Fragment implements View.OnClickListener {
@@ -32,7 +27,6 @@ public class FragmentInscription extends Fragment implements View.OnClickListene
     private EditText edtMdp;
     private EditText edtConfMdp;
     private Button btnConfIns;
-    int compteurUser = 0;
     Bundle myBdl_send = new Bundle();
 
 
@@ -53,7 +47,7 @@ public class FragmentInscription extends Fragment implements View.OnClickListene
         edtPrenom.setOnClickListener(this);
         edtMail = getActivity().findViewById(R.id.edt_mail);
         edtMail.setOnClickListener(this);
-        edtDdn = getActivity().findViewById(R.id.edt_mail);
+        edtDdn = getActivity().findViewById(R.id.edt_ddn);
         edtMdp = getActivity().findViewById(R.id.edt_mdp);
         edtConfMdp = getActivity().findViewById(R.id.edt_confmdp);
         btnConfIns = getActivity().findViewById(R.id.btn_confIns);
@@ -88,64 +82,14 @@ public class FragmentInscription extends Fragment implements View.OnClickListene
                 }
                 if (mdp.equals(mdp2)){
 
-
-
-
-
-
-
-                    UUID id = UUID.randomUUID();
+                    String id = UUID.randomUUID().toString();
                     User newUser = new User(id, nom, prenom, mail, dateN, mdp);
-                    myBdl_send.putParcelable("user", newUser);
+                    System.out.println(newUser.toString());
+                    //myBdl_send.putParcelable("user", newUser);
                     myBdl_send.putString("login", newUser.getMail());
                     myBdl_send.putString("mdp", newUser.getMdp());
-
-                    File newxmlfile = new File(getActivity().getFilesDir()+"/monfichier.xml");
-                    if (!(newxmlfile.exists())){
-                        try {
-                            newxmlfile.createNewFile();
-                        } catch (IOException e) {
-                            Log.e("IOException","exception in createNewFile method");
-                        }
-                    }
-
-                    FileOutputStream fileos = null;
-                    try {
-                        fileos = new FileOutputStream(newxmlfile);
-                    } catch (FileNotFoundException e) {
-                        Log.e("FileNotFoundException","can't create FileOutputStream");
-                    }
-                    XmlSerializer serializer = Xml.newSerializer();
-                    try {
-                        serializer.setOutput(fileos, "UTF-8");
-                        serializer.startDocument(null,Boolean.valueOf(true));
-                        serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output",true);
-                        serializer.startTag(null,"utilisateur");
-                        serializer.startTag(null, "id");
-                        serializer.text(newUser.getId().toString());
-                        serializer.endTag(null,"id");
-                        serializer.startTag(null,"nom");
-                        serializer.text(newUser.getNom());
-                        serializer.endTag(null,"nom");
-                        serializer.startTag(null,"prenom");
-                        serializer.text(newUser.getPrenom());
-                        serializer.endTag(null,"prenom");
-                        serializer.startTag(null,"mail");
-                        serializer.text(newUser.getMail());
-                        serializer.endTag(null,"mail");
-                        serializer.startTag(null,"dateN");
-                        serializer.text(newUser.getDdn());
-                        serializer.endTag(null,"dateN");
-                        serializer.startTag(null,"mdp");
-                        serializer.text(newUser.getMdp());
-                        serializer.endTag(null,"mdp");
-                        serializer.endTag(null, "utilisateur");
-                        serializer.endDocument();
-                        serializer.flush();
-                        fileos.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    Utiles ut = new Utiles();
+                    ut.writeInXmlUser(newUser, this);
 
                     Fragment toConnexionFrag = Utiles.gotoFragmentwithBdl(FragmentConnexion.class,myBdl_send);
 

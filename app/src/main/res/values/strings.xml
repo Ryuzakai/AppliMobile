@@ -4,6 +4,19 @@
     <string name="str_mdp">Mot de passe</string>
     <string name="str_connexion">Connexion</string>
     <string name="str_inscrire">Inscription</string>
+    <string name="str_calendar">Calendrier</string>
+    <string name="str_nom">Nom</string>
+    <string name="str_prenom">Prénom</string>
+    <string name="str_mail">Mail</string>
+    <string name="str_ddn">Date de naissance</string>
+    <string name="str_confmdp">Confirmer le mot de passe</string>
+    <string name="str_confirmer">Confirmer</string>
+    <string name="str_moncal">Mon Calendrier</string>
+    <string name="str_monjournal">Mon Journal</string>
+    <string name="str_choixesp">Choix espace</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
 
     <string name="title_activity_calendar">ActivityCalendar</string>
 

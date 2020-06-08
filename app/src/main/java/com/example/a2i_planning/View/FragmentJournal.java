@@ -1,4 +1,4 @@
-package com.example.a2i_planning;
+package com.example.a2i_planning.View;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,6 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.example.a2i_planning.R;
+import com.example.a2i_planning.Utiles;
 
 public class FragmentJournal extends Fragment {
 
