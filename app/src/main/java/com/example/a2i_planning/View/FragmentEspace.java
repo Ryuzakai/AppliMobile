@@ -1,14 +1,14 @@
-package com.example.a2i_planning;
+package com.example.a2i_planning.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class CalendarActivity extends AppCompatActivity {
+public class FragmentEspace extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar);
+        setContentView(R.layout.activity_espace);
     }
 }
